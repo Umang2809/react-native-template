@@ -1,0 +1,27 @@
+{
+  "name": "@umang-thakkar/base-template",
+  "version": "1.0.0",
+  "description": "The template for react native to setup redux and other neccesary boilerplate codes",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "type": "commonjs",
+  "files": [
+    "template/*",
+    "template.config.js"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "semver": "^7.6.3"
+  },
+  "homepage": "https://github.com/Umang2809/react-native-template",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Umang2809/react-native-template.git"
+  }
+}
