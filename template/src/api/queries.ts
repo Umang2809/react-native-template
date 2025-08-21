@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addTodo, deleteTodo, fetchTodoById, fetchTodos } from "./service";
-const queryClient = useQueryClient()
+
 
 export const useTodos = () => {
     return useQuery({
@@ -17,6 +17,7 @@ export const useTodoById = (id: number) => {
 };
 
 export const useAddTodo = () => {
+    const queryClient = useQueryClient()
     return useMutation({
         mutationFn: addTodo,
         onSuccess: () => {
@@ -26,6 +27,7 @@ export const useAddTodo = () => {
 };
 
 export const useDeleteTodo = () => {
+    const queryClient = useQueryClient()
     return useMutation({
         mutationFn: deleteTodo,
         onSuccess: () => {

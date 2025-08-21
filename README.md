@@ -74,7 +74,10 @@ template/
 
 ## 🚀 Getting Started
 
-1. Clone the repo and navigate to the project folder.
+1. Create a new project using this template:  
+   ```sh
+   npx @react-native-community/cli init MyApp --template @umang-thakkar/base-template
+Note: Replace MyApp with your own project name.
 2. Install dependencies:
     ```sh
     npm install
