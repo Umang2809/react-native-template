@@ -6,7 +6,6 @@
  */
 
 module.exports = {
-  placeholderName: 'HelloWorld',
-  titlePlaceholder: 'Hello App Display Name',
+  placeholderName: 'BaseTemplate',
   templateDir: './template',
 };
