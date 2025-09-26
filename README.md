@@ -5,6 +5,7 @@ A React Native boilerplate to kickstart your mobile app development faster, with
 - 🔁 Redux Toolkit for scalable state management
 - 📍 React Navigation for robust navigation
 - 🔗 React Query for powerful API data fetching and caching
+- 🌙 Dark/Light theme support with system preference detection
 - 🗂️ Scalable folder structure
 - 🧰 Common utility functions
 - 📦 Pre-installed useful dependencies
@@ -15,6 +16,7 @@ A React Native boilerplate to kickstart your mobile app development faster, with
 - ✅ Redux Toolkit with example slices and hooks
 - ✅ React Navigation with Stack Navigator setup
 - ✅ React Query for API management (see `src/api/queries.ts`)
+- ✅ Dark/Light theme support with automatic system detection
 - ✅ Organized folder structure for features, helpers, navigation, etc.
 - ✅ Useful helpers: debouncers, formatters, navigation service
 - ✅ TypeScript support
@@ -53,6 +55,7 @@ template/
 │   │   ├── typography.ts
 │   │   └── utility-functions.ts
 │   ├── hooks/             # Custom hooks
+│   │   └── ThemeContext.tsx  # Theme context and provider
 │   ├── navigation/        # Navigation setup
 │   │   ├── AppStack.tsx
 │   │   ├── AppStackParams.ts
@@ -65,6 +68,10 @@ template/
 │   ├── screens/           # App screens
 │   │   ├── HomeScreen.tsx
 │   │   └── SplashScreen.tsx
+│   ├── theme/             # Theme configuration
+│   │   ├── darkTheme.ts    # Dark theme colors
+│   │   ├── lightTheme.ts   # Light theme colors
+│   │   └── index.ts        # Theme exports and types
 ├── vendor/                # Vendor files
 │   └── bundle/
 ├── package.json           # Project dependencies
@@ -115,6 +122,46 @@ Note: Replace MyApp with your own project name.
   <Button title="Increment" onPress={() => dispatch(increment())} />;
   ```
 
+### 🌙 Dark/Light Theme Support
+
+The template includes a complete theming system with automatic system preference detection:
+
+- **Theme files**: Located in `src/theme/`
+  - `darkTheme.ts` - Dark theme colors
+  - `lightTheme.ts` - Light theme colors  
+  - `index.ts` - Theme exports and TypeScript types
+
+- **Theme Context**: `src/hooks/ThemeContext.tsx` provides theme management
+
+- **Usage in components**:
+  ```tsx
+  import { useTheme } from '../hooks/ThemeContext';
+  
+  const MyComponent = () => {
+    const { theme, mode, toggleTheme } = useTheme();
+    
+    return (
+      <View style={{ backgroundColor: theme.background }}>
+        <Text style={{ color: theme.text }}>
+          Current theme: {mode}
+        </Text>
+        <TouchableOpacity 
+          style={{ backgroundColor: theme.primary }}
+          onPress={toggleTheme}
+        >
+          <Text style={{ color: theme.text }}>Toggle Theme</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+  ```
+
+- **Features**:
+  - Automatic detection of system color scheme preference
+  - Manual theme toggle functionality
+  - Listens for system theme changes
+  - TypeScript support for theme properties
+
 ### 🌐 Navigation
 
 - Navigation setup in `src/navigation/`.
@@ -143,6 +190,32 @@ Note: Replace MyApp with your own project name.
 - Add new API services under `src/api/`
 - Organize screens under `src/screens/`
 - Keep shared components in a `components/` folder (add as needed)
+- Customize theme colors in `src/theme/darkTheme.ts` and `src/theme/lightTheme.ts`
+- Extend theme properties by updating the theme type in `src/theme/index.ts`
+
+## 🎨 Theme Customization
+
+To customize the theme colors, edit the theme files:
+
+```ts
+// src/theme/lightTheme.ts
+export const lightTheme = {
+  background: '#FFFFFF',
+  text: '#000000', 
+  primary: '#4045EF',
+  secondary: '#F4F4F4',
+  // Add your custom colors here
+};
+
+// src/theme/darkTheme.ts  
+export const darkTheme = {
+  background: '#000000',
+  text: '#FFFFFF',
+  primary: '#4045EF', 
+  secondary: '#1A1A1A',
+  // Add your custom colors here
+};
+```
 
 ## 🤝 Contributing
 

@@ -7,6 +7,7 @@ import {
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import Main from './Main';
+import { ThemeProvider } from './src/hooks/ThemeContext';
 const queryClient = new QueryClient()
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -15,7 +16,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
         <SafeAreaProvider>
-          <Main />
+          <ThemeProvider>
+            <Main />
+          </ThemeProvider>
         </SafeAreaProvider>
       </Provider>
     </QueryClientProvider>
