@@ -1,6 +1,6 @@
 {
   "name": "@umang-thakkar/base-template",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "The template for react native to setup redux and other neccesary boilerplate codes",
   "license": "MIT",
   "publishConfig": {
