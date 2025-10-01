@@ -23,5 +23,18 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Umang2809/react-native-template.git"
-  }
+  },
+  "keywords": [
+    "react-native",
+    "react-native-template",
+    "react-native-boilerplate",
+    "redux-toolkit",
+    "react-navigation",
+    "react-query",
+    "typescript",
+    "mobile-app",
+    "dark-mode",
+    "light-theme",
+    "rn-template"
+  ]
 }
