@@ -1,0 +1,130 @@
+{
+  "root": true,
+  "extends": [
+    "@react-native",
+    "@react-native-community",
+    "plugin:@tanstack/eslint-plugin-query/recommended",
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+    },
+  },
+  "plugins": [
+    "react",
+    "react-native",
+    "react-hooks",
+    "@typescript-eslint",
+    "@tanstack/query",
+  ],
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true,
+    "react-native/react-native": true,
+  },
+  "rules": {
+    // React best practices
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "react/display-name": "warn",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+
+    // TypeScript best practices
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+      },
+    ],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/explicit-function-return-types": "off",
+    "@typescript-eslint/no-non-null-assertion": "warn",
+
+    // React Native best practices
+    "react-native/no-unused-styles": "warn",
+    "react-native/split-platform-components": "warn",
+    "react-native/no-inline-styles": "warn",
+    "react-native/no-color-literals": "warn",
+
+    // General best practices
+    "no-console": [
+      "warn",
+      {
+        "allow": ["warn", "error", "info"],
+      },
+    ],
+    "no-debugger": "warn",
+    "no-var": "error",
+    "prefer-const": "error",
+    "eqeqeq": ["error", "always"],
+    "curly": ["error", "all"],
+    "brace-style": ["error", "1tbs"],
+    "space-before-function-paren": [
+      "error",
+      {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always",
+      },
+    ],
+    "semi": ["error", "always"],
+    "quotes": ["error", "single", { "avoidEscape": true }],
+    "indent": ["error", 2],
+
+    // Import organization
+    "sort-imports": "off",
+    "import/order": [
+      "warn",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+        ],
+        "pathGroups": [
+          {
+            "pattern": "react*",
+            "group": "external",
+            "position": "before",
+          },
+        ],
+        "alphabeticalOrder": true,
+      },
+    ],
+
+    // React Query best practices
+    "@tanstack/query/exhaustive-deps": "error",
+    "@tanstack/query/prefer-query-object-syntax": "warn",
+  },
+  "settings": {
+    "react": {
+      "version": "detect",
+    },
+  },
+  "overrides": [
+    {
+      "files": ["**/__tests__/**", "**/*.test.ts", "**/*.test.tsx"],
+      "env": {
+        "jest": true,
+      },
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+      },
+    },
+    {
+      "files": ["**/*.d.ts"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off",
+      },
+    },
+  ],
+}

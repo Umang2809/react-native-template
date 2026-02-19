@@ -1,4 +1,5 @@
 export type AppStackParams = {
-    SplashScreen: undefined
-    HomeScreen: undefined
-}
+  SplashScreen: undefined;
+  LoginScreen: undefined;
+  HomeScreen: undefined;
+};
