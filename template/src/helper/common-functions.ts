@@ -1,24 +1,19 @@
 import axios from "axios";
-import moment from "moment";
+import { format, isValid, parseISO } from "date-fns";
 
 const errorMessage = (error: unknown): string => {
-    if (axios.isAxiosError(error)) {
-        return error.response?.data?.message || error.message;
-    }
-    return String(error);
+  if (axios.isAxiosError(error)) {
+    return error.response?.data?.message || error.message;
+  }
+  return String(error);
 };
 
 export function toFormattedDate(
-    dateString: string,
-    format: string
-): string | any {
-    if (!dateString) { return null; }
-
-    const date = moment(dateString);
-
-    if (!date.isValid()) {
-        return null;
-    }
-
-    return date.format(format);
+  dateString: string,
+  formatStr: string,
+): string | null {
+  if (!dateString) return null;
+  const date = parseISO(dateString);
+  if (!isValid(date)) return null;
+  return format(date, formatStr);
 }

@@ -239,9 +239,12 @@ The template includes a complete theming system with automatic system preference
 - API calls and React Query hooks are in `src/api/queries.ts`.
 - Example usage:
   ```ts
-  import { useQuery } from "react-query";
+  import { useQuery } from "@tanstack/react-query";
   import { fetchData } from "../api/queries";
-  const { data, isLoading } = useQuery("data", fetchData);
+  const { data, isLoading } = useQuery({
+    queryKey: ["data"],
+    queryFn: fetchData,
+  });
   ```
 
 ### 🧰 Utility Functions
