@@ -128,11 +128,13 @@ Note: Replace MyApp with your own project name.
   <Button title="Increment" onPress={() => dispatch(increment())} />;
   ```
 
-### 💾 Redux Persist (Auth Persistence)
+### 💾 MMKV & Redux Persist (Auth Persistence)
 
-Redux Persist is pre-configured in the template to persist the `auth` slice across app restarts. The user's data and `accessToken` survive kills and relaunches — no need to log in again.
+Storage in this template is powered by [**react-native-mmkv**](https://github.com/mrousavy/react-native-mmkv), a high-performance synchronous key-value storage library.
 
-> `redux-persist` and `@react-native-async-storage/async-storage` are already installed and configured.
+Redux Persist is pre-configured in the template to persist the `auth` slice using MMKV across app restarts. The user's data and `accessToken` survive kills and relaunches — no need to log in again.
+
+> `react-native-mmkv`, `react-native-nitro-modules`, and `redux-persist` are already installed and configured.
 
 **What's included out of the box:**
 
@@ -145,7 +147,13 @@ Redux Persist is pre-configured in the template to persist the `auth` slice acro
 | `setAccessToken` | Updates only the `accessToken`                 |
 | `clearAuth`      | Clears all auth state on logout                |
 
-`src/redux/store.ts` configures `persistReducer` to persist only the `auth` slice via `AsyncStorage` and exports `persistor`.
+`constants/StoragePreferences.ts` exports:
+- `storage`: Raw MMKV instance for fast synchronous operations.
+- `reduxStorage`: Redux Persist storage adapter backed by MMKV.
+- `StorageKeys`: Predefined storage keys (`AUTH_TOKEN`, `USER_DATA`, etc.).
+- Helper utilities: `getData`, `setData`, `removeData`, `removeAll`, `hasKey`, and `StoragePreferences` helper methods.
+
+`src/redux/store.ts` configures `persistReducer` to persist only the `auth` slice via MMKV (`reduxStorage`) and exports `persistor`.
 
 `App.tsx` wraps the app with `PersistGate` so persisted state is fully rehydrated before the UI renders.
 
@@ -163,7 +171,7 @@ const dispatch = useAppDispatch();
 
 // After a successful login API call:
 dispatch(setCredentials({ user: userData, accessToken: token }));
-// State is automatically persisted to AsyncStorage
+// State is automatically persisted to MMKV
 ```
 
 **Usage example — logout:**
@@ -173,7 +181,21 @@ import { useAppDispatch } from "../redux/store";
 import { clearAuth } from "../redux/slices/authSlice";
 
 const dispatch = useAppDispatch();
-dispatch(clearAuth()); // Clears Redux state and AsyncStorage
+dispatch(clearAuth()); // Clears Redux state and MMKV persisted auth
+```
+
+**Usage example — direct MMKV key-value storage:**
+
+```tsx
+import { StoragePreferences, getData, setData } from "../constants/StoragePreferences";
+
+// Synchronous and fast!
+setData("theme_mode", "dark");
+const theme = getData("theme_mode");
+
+// Or using StoragePreferences helper:
+StoragePreferences.setString("username", "John");
+const username = StoragePreferences.getString("username");
 ```
 
 **Usage example — read auth state:**
@@ -186,9 +208,9 @@ const { user, accessToken } = useAppSelector((state) => state.auth);
 
 **How it works end-to-end:**
 
-- On login → dispatch `setCredentials` → persisted to `AsyncStorage`
+- On login → dispatch `setCredentials` → persisted to MMKV via `reduxStorage`
 - On app restart → `PersistGate` rehydrates `auth` → `SplashScreen` sees `accessToken` → navigates directly to `HomeScreen`
-- On logout → dispatch `clearAuth` → persisted data cleared → `SplashScreen` routes to `LoginScreen`
+- On logout → dispatch `clearAuth` → persisted data cleared from MMKV → `SplashScreen` routes to `LoginScreen`
 
 ### 🌙 Dark/Light Theme Support
 

@@ -3,10 +3,10 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistReducer, persistStore } from "redux-persist";
 import reducer from "./slice";
 import authReducer from "./slices/authSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { reduxStorage } from "../../constants/StoragePreferences";
 const persistConfig = {
   key: "root",
-  storage: AsyncStorage,
+  storage: reduxStorage,
   whitelist: ["auth"],
 };
 
