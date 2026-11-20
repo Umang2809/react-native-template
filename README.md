@@ -1,324 +1,54 @@
 # 🚀 React Native Base Template
 
-A React Native boilerplate to kickstart your mobile app development faster, with preconfigured essentials like:
+A React Native CLI template with the boilerplate already done: Redux Toolkit, Redux Persist on MMKV, React Navigation, React Query, Axios, light/dark theming and TypeScript.
 
-- 🔁 Redux Toolkit for scalable state management
-- 💾 Redux Persist for auth persistence across sessions
-- 📍 React Navigation for robust navigation
-- 🔗 React Query for powerful API data fetching and caching
-- 🌙 Dark/Light theme support with system preference detection
-- 🗂️ Scalable folder structure
-- 🧰 Common utility functions
-- 📦 Pre-installed useful dependencies
-- ⚙️ Optimized project setup for faster development
+## Quick start
 
-## 📦 Features
-
-- ✅ Redux Toolkit with example slices and hooks
-- ✅ Redux Persist with auth slice persistence (user data + access token)
-- ✅ React Navigation with Stack Navigator setup
-- ✅ React Query for API management (see `src/api/queries.ts`)
-- ✅ Dark/Light theme support with automatic system detection
-- ✅ Organized folder structure for features, helpers, navigation, etc.
-- ✅ Useful helpers: debouncers, formatters, navigation service
-- ✅ TypeScript support
-- ✅ Common third-party libraries installed
-
-## 📁 Folder Structure
-
-```
-template/
-├── App.tsx                # Entry point
-├── Main.tsx               # Main app logic
-├── app.json               # App config
-├── babel.config.js        # Babel config
-├── constants/             # App constants
-│   ├── AppConstants.tsx
-│   └── StoragePreferences.ts
-├── __tests__/             # Test files
-│   └── App.test.tsx
-├── android/               # Android project files
-├── ios/                   # iOS project files
-├── src/
-│   ├── api/               # API clients, actions, and React Query hooks
-│   │   ├── AxiosActions.ts
-│   │   ├── AxiosClient.ts
-│   │   ├── queries.ts      # React Query hooks and API calls
-│   │   └── service.ts
-│   ├── assets/            # Fonts, images, svg
-│   │   ├── fonts/
-│   │   ├── images/
-│   │   └── svg/
-│   ├── helper/            # Utility and helper functions
-│   │   ├── colors.ts
-│   │   ├── common-functions.ts
-│   │   ├── font-family.ts
-│   │   ├── navigation-service.ts
-│   │   ├── typography.ts
-│   │   └── utility-functions.ts
-│   ├── hooks/             # Custom hooks
-│   │   └── ThemeContext.tsx  # Theme context and provider
-│   ├── navigation/        # Navigation setup
-│   │   ├── AppStack.tsx
-│   │   ├── AppStackParams.ts
-│   │   └── screens.ts
-│   ├── redux/             # Redux store, slices, types
-│   │   ├── action.ts
-│   │   ├── slices/
-│   │   │   └── authSlice.ts  # Auth slice with user data + token state
-│   │   ├── store.ts          # Store with redux-persist configuration
-│   │   └── types.d.ts
-│   ├── screens/           # App screens
-│   │   ├── HomeScreen.tsx
-│   │   ├── LoginScreen.tsx   # Demo login screen — saves user + token to auth slice
-│   │   └── SplashScreen.tsx  # Reads accessToken from Redux to decide initial route
-│   ├── theme/             # Theme configuration
-│   │   ├── darkTheme.ts    # Dark theme colors
-│   │   ├── lightTheme.ts   # Light theme colors
-│   │   └── index.ts        # Theme exports and types
-├── vendor/                # Vendor files
-│   └── bundle/
-├── package.json           # Project dependencies
-├── tsconfig.json          # TypeScript config
-└── README.md              # Template README
+```sh
+npx @react-native-community/cli init MyApp --template @umang-thakkar/base-template
+cd MyApp
+npm start
 ```
 
-## 🚀 Getting Started
+Then, in another terminal, `npm run android` or `npm run ios`. Requires Node.js 22.11+.
 
-1. Create a new project using this template:
-   ```sh
-   npx @react-native-community/cli init MyApp --template @umang-thakkar/base-template
-   ```
+## What's included
 
-```
-Note: Replace MyApp with your own project name.
-```
+- **Redux Toolkit** store with typed hooks and an `auth` slice (`user` + `accessToken`)
+- **Redux Persist on MMKV**: login survives app restarts
+- **React Navigation 7** stack with a screen registry and a navigation service for use outside components
+- **React Query 5** hooks over a layered **Axios** API (client → actions → services → queries)
+- **Light/dark themes** that follow the system setting, via `useTheme()`
+- **ErrorBoundary** with a dev-only error view
+- Responsive scaling, typography presets, date formatting and platform helpers
+- ESLint rules for React, TypeScript, React Native and React Query; Jest with an MMKV mock
 
-2. Install dependencies:
-   ```sh
-   npm install
-   ```
-3. Start Metro server:
-   ```sh
-   npx react-native start
-   ```
-4. Run the app:
+## Documentation
 
-   ```sh
-   # For Android
-   npx react-native run-android
+Full docs are in [`docs/`](./docs/README.md):
 
-   # For iOS
-   npx react-native run-ios
-   ```
+- [Getting Started](./docs/getting-started.md)
+- [Project Structure](./docs/project-structure.md)
+- [State Management](./docs/state-management.md)
+- [Storage (MMKV)](./docs/storage.md)
+- [Networking](./docs/networking.md)
+- [Navigation](./docs/navigation.md)
+- [Theming](./docs/theming.md)
+- [Helpers & Utilities](./docs/helpers.md)
+- [Error Handling](./docs/error-handling.md)
+- [Code Quality & Testing](./docs/code-quality.md)
+- [Customization Recipes](./docs/customization.md)
+- [Roadmap & Known Issues](./docs/roadmap.md)
+- [Publishing the Template](./docs/publishing.md)
 
-> **Note**: With React Native 0.60+, iOS dependencies are automatically linked using autolinking. Manual pod installation is no longer required for most cases.
+## Contributing
 
-## 🧠 Usage Instructions
+Fork it and customize it. Pull requests are welcome.
 
-### 📌 Redux Toolkit
-
-- Store is configured in `src/redux/store.ts`.
-- Example usage:
-  ```tsx
-  import { useAppSelector, useAppDispatch } from "../redux/store";
-  import { increment } from "../redux/slice";
-  const count = useAppSelector((state) => state.counter.value);
-  const dispatch = useAppDispatch();
-  <Button title="Increment" onPress={() => dispatch(increment())} />;
-  ```
-
-### 💾 MMKV & Redux Persist (Auth Persistence)
-
-Storage in this template is powered by [**react-native-mmkv**](https://github.com/mrousavy/react-native-mmkv), a high-performance synchronous key-value storage library.
-
-Redux Persist is pre-configured in the template to persist the `auth` slice using MMKV across app restarts. The user's data and `accessToken` survive kills and relaunches — no need to log in again.
-
-> `react-native-mmkv`, `react-native-nitro-modules`, and `redux-persist` are already installed and configured.
-
-**What's included out of the box:**
-
-`src/redux/slices/authSlice.ts` stores `user` and `accessToken` with the following actions:
-
-| Action           | Description                                    |
-| ---------------- | ---------------------------------------------- |
-| `setCredentials` | Sets both `user` and `accessToken` after login |
-| `setUser`        | Updates only the `user` object                 |
-| `setAccessToken` | Updates only the `accessToken`                 |
-| `clearAuth`      | Clears all auth state on logout                |
-
-`constants/StoragePreferences.ts` exports:
-- `storage`: Raw MMKV instance for fast synchronous operations.
-- `reduxStorage`: Redux Persist storage adapter backed by MMKV.
-- `StorageKeys`: Predefined storage keys (`AUTH_TOKEN`, `USER_DATA`, etc.).
-- Helper utilities: `getData`, `setData`, `removeData`, `removeAll`, `hasKey`, and `StoragePreferences` helper methods.
-
-`src/redux/store.ts` configures `persistReducer` to persist only the `auth` slice via MMKV (`reduxStorage`) and exports `persistor`.
-
-`App.tsx` wraps the app with `PersistGate` so persisted state is fully rehydrated before the UI renders.
-
-`src/screens/SplashScreen.tsx` reads `accessToken` from Redux on startup — if present, navigates to `HomeScreen`, otherwise to `LoginScreen`.
-
-`src/screens/LoginScreen.tsx` is a demo login screen that dispatches `setCredentials` with dummy `user` and `accessToken` data to demonstrate the persistence flow.
-
-**Usage example — login:**
-
-```tsx
-import { useAppDispatch } from "../redux/store";
-import { setCredentials } from "../redux/slices/authSlice";
-
-const dispatch = useAppDispatch();
-
-// After a successful login API call:
-dispatch(setCredentials({ user: userData, accessToken: token }));
-// State is automatically persisted to MMKV
-```
-
-**Usage example — logout:**
-
-```tsx
-import { useAppDispatch } from "../redux/store";
-import { clearAuth } from "../redux/slices/authSlice";
-
-const dispatch = useAppDispatch();
-dispatch(clearAuth()); // Clears Redux state and MMKV persisted auth
-```
-
-**Usage example — direct MMKV key-value storage:**
-
-```tsx
-import { StoragePreferences, getData, setData } from "../constants/StoragePreferences";
-
-// Synchronous and fast!
-setData("theme_mode", "dark");
-const theme = getData("theme_mode");
-
-// Or using StoragePreferences helper:
-StoragePreferences.setString("username", "John");
-const username = StoragePreferences.getString("username");
-```
-
-**Usage example — read auth state:**
-
-```tsx
-import { useAppSelector } from "../redux/store";
-
-const { user, accessToken } = useAppSelector((state) => state.auth);
-```
-
-**How it works end-to-end:**
-
-- On login → dispatch `setCredentials` → persisted to MMKV via `reduxStorage`
-- On app restart → `PersistGate` rehydrates `auth` → `SplashScreen` sees `accessToken` → navigates directly to `HomeScreen`
-- On logout → dispatch `clearAuth` → persisted data cleared from MMKV → `SplashScreen` routes to `LoginScreen`
-
-### 🌙 Dark/Light Theme Support
-
-The template includes a complete theming system with automatic system preference detection:
-
-- **Theme files**: Located in `src/theme/`
-  - `darkTheme.ts` - Dark theme colors
-  - `lightTheme.ts` - Light theme colors
-  - `index.ts` - Theme exports and TypeScript types
-
-- **Theme Context**: `src/hooks/ThemeContext.tsx` provides theme management
-
-- **Usage in components**:
-
-  ```tsx
-  import { useTheme } from "../hooks/ThemeContext";
-
-  const MyComponent = () => {
-    const { theme, mode, toggleTheme } = useTheme();
-
-    return (
-      <View style={{ backgroundColor: theme.background }}>
-        <Text style={{ color: theme.text }}>Current theme: {mode}</Text>
-        <TouchableOpacity
-          style={{ backgroundColor: theme.primary }}
-          onPress={toggleTheme}
-        >
-          <Text style={{ color: theme.text }}>Toggle Theme</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-  ```
-
-- **Features**:
-  - Automatic detection of system color scheme preference
-  - Manual theme toggle functionality
-  - Listens for system theme changes
-  - TypeScript support for theme properties
-
-### 🌐 Navigation
-
-- Navigation setup in `src/navigation/`.
-- Register screens in `AppStack.tsx`.
-
-### 🔗 React Query
-
-- API calls and React Query hooks are in `src/api/queries.ts`.
-- Example usage:
-  ```ts
-  import { useQuery } from "@tanstack/react-query";
-  import { fetchData } from "../api/queries";
-  const { data, isLoading } = useQuery({
-    queryKey: ["data"],
-    queryFn: fetchData,
-  });
-  ```
-
-### 🧰 Utility Functions
-
-- Use helpers from `src/helper/`:
-  ```ts
-  import { formatDate } from "../helper/common-functions";
-  ```
-
-## 🪄 Customization Tips
-
-- Add new slices under `src/redux/`
-- Add new API services under `src/api/`
-- Organize screens under `src/screens/`
-- Keep shared components in a `components/` folder (add as needed)
-- Customize theme colors in `src/theme/darkTheme.ts` and `src/theme/lightTheme.ts`
-- Extend theme properties by updating the theme type in `src/theme/index.ts`
-- To persist additional slices, create a separate `persistConfig` per slice and wrap with `persistReducer`
-- To exclude sensitive fields from persistence, use the `blacklist` array in the persist config instead of `whitelist`
-
-## 🎨 Theme Customization
-
-To customize the theme colors, edit the theme files:
-
-```ts
-// src/theme/lightTheme.ts
-export const lightTheme = {
-  background: "#FFFFFF",
-  text: "#000000",
-  primary: "#4045EF",
-  secondary: "#F4F4F4",
-  // Add your custom colors here
-};
-
-// src/theme/darkTheme.ts
-export const darkTheme = {
-  background: "#000000",
-  text: "#FFFFFF",
-  primary: "#4045EF",
-  secondary: "#1A1A1A",
-  // Add your custom colors here
-};
-```
-
-## 🤝 Contributing
-
-Feel free to fork and customize this template! Pull requests welcome.
-
-## 👨‍💻 Author
+## Author
 
 Created with ❤️ by **[Umang Thakkar](https://github.com/Umang2809)**
 
-## 📜 License
+## License
 
 MIT © [Umang Thakkar](https://github.com/Umang2809)
