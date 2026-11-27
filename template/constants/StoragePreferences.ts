@@ -1,22 +1,18 @@
-import { createMMKV, MMKV } from "react-native-mmkv";
-import type { Storage } from "redux-persist";
+import { createMMKV } from 'react-native-mmkv';
+import type { Storage } from 'redux-persist';
 
-/**
- * MMKV storage instance.
- * Supports MMKV v4 (createMMKV) and v3 (new MMKV()).
- */
-export const storage =
-  typeof createMMKV === "function" ? createMMKV() : new (MMKV as any)();
+/** MMKV storage instance (react-native-mmkv v4). */
+export const storage = createMMKV();
 
 /**
  * Predefined storage keys used across the application.
  */
 export const StorageKeys = {
-  AUTH_TOKEN: "auth_token",
-  USER_DATA: "user_data",
-  THEME_MODE: "theme_mode",
-  LANGUAGE: "language",
-  IS_FIRST_TIME: "is_first_time",
+  AUTH_TOKEN: 'auth_token',
+  USER_DATA: 'user_data',
+  THEME_MODE: 'theme_mode',
+  LANGUAGE: 'language',
+  IS_FIRST_TIME: 'is_first_time',
 } as const;
 
 export type StorageKey = (typeof StorageKeys)[keyof typeof StorageKeys] | string;
@@ -35,11 +31,7 @@ export const reduxStorage: Storage = {
     return Promise.resolve(value ?? null);
   },
   removeItem: (key: string): Promise<void> => {
-    if (typeof (storage as any).remove === "function") {
-      (storage as any).remove(key);
-    } else if (typeof (storage as any).delete === "function") {
-      (storage as any).delete(key);
-    }
+    storage.remove(key);
     return Promise.resolve();
   },
 };
@@ -50,10 +42,7 @@ export const reduxStorage: Storage = {
  * @param parseJSON - Whether to parse the value as JSON (default: false).
  * @returns The stored value or null if not found.
  */
-export const getData = <T = string>(
-  key: string,
-  parseJSON: boolean = false
-): T | null => {
+export const getData = <T = string>(key: string, parseJSON: boolean = false): T | null => {
   try {
     const value = storage.getString(key);
 
@@ -85,11 +74,11 @@ export const getData = <T = string>(
  */
 export const setData = <T>(key: string, value: T): boolean => {
   try {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       storage.set(key, value);
-    } else if (typeof value === "number") {
+    } else if (typeof value === 'number') {
       storage.set(key, value);
-    } else if (typeof value === "boolean") {
+    } else if (typeof value === 'boolean') {
       storage.set(key, value);
     } else {
       storage.set(key, JSON.stringify(value));
@@ -108,11 +97,7 @@ export const setData = <T>(key: string, value: T): boolean => {
  */
 export const removeData = (key: string): boolean => {
   try {
-    if (typeof (storage as any).remove === "function") {
-      (storage as any).remove(key);
-    } else if (typeof (storage as any).delete === "function") {
-      (storage as any).delete(key);
-    }
+    storage.remove(key);
     return true;
   } catch (error) {
     console.error(`Error removing data for key "${key}":`, error);
@@ -129,7 +114,7 @@ export const removeAll = (): boolean => {
     storage.clearAll();
     return true;
   } catch (error) {
-    console.error("Error clearing all storage:", error);
+    console.error('Error clearing all storage:', error);
     return false;
   }
 };

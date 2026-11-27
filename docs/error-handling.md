@@ -40,8 +40,13 @@ The fallback uses fixed colors on purpose, since the theme provider may be the t
 `AxiosActions` throws the server's response body when there is one (`err.response?.data`), otherwise the original error. With React Query, read it from `error`:
 
 ```tsx
-const { error } = useTodos();
-const message = (error as any)?.message ?? 'Something went wrong';
+import { getErrorMessage, showErrorSnackbar } from '../helper/common-functions';
+
+const { error } = useTodoById(id);
+const message = error ? getErrorMessage(error) : null;
+
+// In a mutation:
+mutate(vars, { onError: err => showErrorSnackbar(getErrorMessage(err)) });
 ```
 
 Shared response types live in `src/redux/types.d.ts`:
@@ -51,7 +56,7 @@ interface ApiErrorResponse {
   message: string;
   statusCode?: number;
   code?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 ```
 

@@ -13,15 +13,17 @@ The template ships a small light/dark theme system based on React context.
 
 ## Theme tokens
 
-| Token | Light | Dark |
-| --- | --- | --- |
-| `background` | `#FFFFFF` | `#000000` |
-| `text` | `#000000` | `#FFFFFF` |
-| `primary` | `#4045EF` | `#4045EF` |
-| `secondary` | `#F4F4F4` | `#1A1A1A` |
-| `card` | `#FFFF` | `#FFFF` |
-
-> `card` is white in **both** themes, so in dark mode the Login inputs show white text on a white field. Change the dark value (e.g. `#1A1A1A`) when you set your palette.
+| Token | Light | Dark | Use |
+| --- | --- | --- | --- |
+| `background` | `#FFFFFF` | `#000000` | Screen background |
+| `card` | `#F4F4F5` | `#18181B` | Cards, inputs, sheets |
+| `text` | `#000000` | `#FFFFFF` | Primary text |
+| `muted` | `#71717A` | `#A1A1AA` | Secondary text, placeholders |
+| `border` | `#E4E4E7` | `#27272A` | Dividers, outlines |
+| `primary` | `#4045EF` | `#4045EF` | Brand color |
+| `onPrimary` | `#FFFFFF` | `#FFFFFF` | Text/icons on `primary` |
+| `secondary` | `#F4F4F4` | `#1A1A1A` | Secondary surfaces |
+| `error` | `#DC2626` | `#F87171` | Errors, destructive actions |
 
 ## Using the theme
 
@@ -29,7 +31,7 @@ The template ships a small light/dark theme system based on React context.
 import { useTheme } from '../hooks/ThemeContext';
 
 const Card = () => {
-  const { theme, mode, toggleTheme } = useTheme();
+  const { theme, mode, preference, setPreference, toggleTheme } = useTheme();
 
   return (
     <View style={{ backgroundColor: theme.card }}>
@@ -48,47 +50,27 @@ const Card = () => {
 | --- | --- | --- |
 | `theme` | `ThemeType` | The active palette |
 | `mode` | `'light' \| 'dark'` | The active mode |
-| `toggleTheme` | `() => void` | Flips the mode |
+| `preference` | `'light' \| 'dark' \| 'system'` | The user's choice (persisted) |
+| `setPreference` | `(p) => void` | Sets and saves the choice; `'system'` follows the OS again |
+| `toggleTheme` | `() => void` | Pins the opposite of the current mode |
 
 ## How the mode is chosen
 
-1. On start, the provider reads `Appearance.getColorScheme()` and falls back to `light`.
-2. It listens for system appearance changes and follows them.
-3. `toggleTheme` flips the mode in memory.
-
-Current limits:
-
-- The manual choice is **not persisted**. It resets on relaunch.
-- A system appearance change overrides a manual toggle.
-
-To add a persisted *Light / Dark / System* setting, store the preference with `StorageKeys.THEME_MODE` and only follow `Appearance` when the preference is `system`. This is on the [Roadmap](./roadmap.md).
+- The preference is read synchronously from MMKV (`StorageKeys.THEME_MODE`) on startup, so the saved choice applies on the first frame.
+- With `system` (the default, and what an empty key means) the mode follows the OS live.
+- `setPreference('light' | 'dark')` and `toggleTheme()` save a fixed choice; `setPreference('system')` deletes the key and follows the OS again.
 
 ## Adding a token
 
 1. Add it to `lightTheme.ts`. `ThemeType` is inferred from this file, so the new key becomes required.
-2. Add the same key to `darkTheme.ts`. TypeScript will not flag it if you forget, because `darkTheme` is not typed against `ThemeType`; type it explicitly to get that check:
-
-   ```ts
-   import type { ThemeType } from './index';
-   export const darkTheme: ThemeType = { /* ... */ };
-   ```
-
+2. Add the same key to `darkTheme.ts`. It's typed as `ThemeType`, so TypeScript flags a missing key.
 3. Use `theme.yourToken` in components.
 
-## Navigation theme
+## Navigation theme and status bar
 
-`NavigationContainer` uses React Navigation's default theme, so screen transitions can flash white in dark mode. Pass a theme derived from yours:
+`Main.tsx` builds React Navigation's theme from yours: it starts from `DarkTheme` or `DefaultTheme` to match the mode, then sets `primary`, `background`, `card`, `text`, `border` and `notification` (`error`) from your palette, so there's no white flash behind screens in dark mode. It also renders `<StatusBar barStyle={mode === 'dark' ? 'light-content' : 'dark-content'} />`.
 
-```tsx
-import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
-
-const { theme, mode } = useTheme();
-const base = mode === 'dark' ? DarkTheme : DefaultTheme;
-
-<NavigationContainer
-  ref={navigationRef}
-  theme={{ ...base, colors: { ...base.colors, background: theme.background, primary: theme.primary } }}>
-```
+If you enable Android edge-to-edge (`edgeToEdgeEnabled=true` in `android/gradle.properties`), you can drop that `StatusBar`: content draws behind the system bars and `SafeAreaView` handles the insets.
 
 ## Static colors
 

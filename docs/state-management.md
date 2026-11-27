@@ -78,7 +78,7 @@ const Counter = () => {
 
 ```ts
 interface AuthState {
-  user: { [key: string]: any } | null;
+  user: User | null; // User is in src/redux/types.d.ts
   accessToken: string | null;
 }
 ```
@@ -86,11 +86,11 @@ interface AuthState {
 | Action | Payload | Effect |
 | --- | --- | --- |
 | `setCredentials` | `{ user, accessToken }` | Sets both after login |
-| `setUser` | `User` | Updates only the user |
+| `setUser` | `User \| null` | Updates only the user |
 | `setAccessToken` | `string \| null` | Updates only the token (e.g. after refresh) |
 | `clearAuth` | none | Clears both (logout) |
 
-Selectors: `selectCurrentUser`, `selectAccessToken`.
+Selectors (typed with `RootStore`): `selectCurrentUser`, `selectAccessToken`, `selectIsLoggedIn`.
 
 ### Auth flow end to end
 

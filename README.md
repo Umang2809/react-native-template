@@ -1,6 +1,8 @@
 # 🚀 React Native Base Template
 
-A React Native CLI template with the boilerplate already done: Redux Toolkit, Redux Persist on MMKV, React Navigation, React Query, Axios, light/dark theming and TypeScript.
+A React Native CLI template with the boilerplate already done: Redux Toolkit, Redux Persist on MMKV, React Navigation, React Query, Axios, light/dark theming and TypeScript. Styling uses plain `StyleSheet`.
+
+> Prefer Tailwind-style `className` styling? Use the NativeWind variant: [`@umang-thakkar/base-template-nativewind`](https://www.npmjs.com/package/@umang-thakkar/base-template-nativewind).
 
 ## Quick start
 
@@ -14,14 +16,18 @@ Then, in another terminal, `npm run android` or `npm run ios`. Requires Node.js 
 
 ## What's included
 
-- **Redux Toolkit** store with typed hooks and an `auth` slice (`user` + `accessToken`)
+- **Redux Toolkit** store with typed hooks and an `auth` slice (`user` + `accessToken`, typed selectors)
 - **Redux Persist on MMKV**: login survives app restarts
-- **React Navigation 7** stack with a screen registry and a navigation service for use outside components
-- **React Query 5** hooks over a layered **Axios** API (client → actions → services → queries)
-- **Light/dark themes** that follow the system setting, via `useTheme()`
+- **React Navigation 7** native stack with a screen registry, per-screen options and a navigation service for use outside components
+- **React Query 5** hooks over a layered **Axios** API (client → actions → services → queries), with an interceptor that attaches the auth token
+- **Infinite scroll** helper `usePaginatedAPI` with debounced search
+- **Light/dark themes** via `useTheme()`; the user's Light / Dark / System choice is saved in MMKV, and the navigation theme and status bar follow it
+- App-wide **snackbars** (`showSnackbar` / `showErrorSnackbar`) and `getErrorMessage` for API errors
+- Central `API_Routes` and `AppString` constants
 - **ErrorBoundary** with a dev-only error view
-- Responsive scaling, typography presets, date formatting and platform helpers
-- ESLint rules for React, TypeScript, React Native and React Query; Jest with an MMKV mock
+- Responsive scaling, typography presets, formatting, date and platform helpers
+- ESLint (React, TypeScript, React Native, React Query), Prettier, and Jest with MMKV and Reanimated mocks
+- An agent skill (`.agents/skills/umang-design-pattern` in the repo) describing the conventions, so AI coding agents build apps the same way
 
 ## Documentation
 

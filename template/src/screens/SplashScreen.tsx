@@ -1,36 +1,40 @@
-import * as React from "react";
-import { Text, View, StyleSheet } from "react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RouteProp } from "@react-navigation/native";
-import { AppStackParams } from "../navigation/AppStackParams";
-import { useEffect } from "react";
-import { useAppSelector } from "../redux/store";
+import React, { useEffect } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
+import { AppStackParams } from '../navigation/AppStackParams';
+import { useAppSelector } from '../redux/store';
+import { selectAccessToken } from '../redux/slices/authSlice';
+import { useTheme } from '../hooks/ThemeContext';
+import { Typography } from '../helper/typography';
+import { verticalScale } from '../helper/matrics';
+import { name as appName } from '../../app.json';
 
-import { selectAccessToken } from "../redux/slices/authSlice";
 type Props = {
-  navigation: NativeStackNavigationProp<
-    AppStackParams,
-    "SplashScreen",
-    "SplashScreen"
-  >;
-  route: RouteProp<AppStackParams, "SplashScreen">;
+  navigation: NativeStackNavigationProp<AppStackParams, 'SplashScreen'>;
+  route: RouteProp<AppStackParams, 'SplashScreen'>;
 };
+
+const SPLASH_DELAY_MS = 800;
 
 const SplashScreen = ({ navigation }: Props) => {
   const accessToken = useAppSelector(selectAccessToken);
+  const { theme } = useTheme();
 
   useEffect(() => {
-    setTimeout(() => {
-      if (accessToken) {
-        navigation.reset({ index: 0, routes: [{ name: "HomeScreen" }] });
-      } else {
-        navigation.reset({ index: 0, routes: [{ name: "LoginScreen" }] });
-      }
-    }, 800);
-  }, [accessToken]);
+    const timer = setTimeout(() => {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: accessToken ? 'HomeScreen' : 'LoginScreen' }],
+      });
+    }, SPLASH_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [accessToken, navigation]);
+
   return (
-    <View style={styles.container}>
-      <Text>SplashScreen</Text>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Text style={[Typography.title1, { color: theme.text }]}>{appName}</Text>
+      <ActivityIndicator style={styles.loader} color={theme.primary} />
     </View>
   );
 };
@@ -38,5 +42,12 @@ const SplashScreen = ({ navigation }: Props) => {
 export default SplashScreen;
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loader: {
+    marginTop: verticalScale(24),
+  },
 });

@@ -114,6 +114,24 @@ The template does **not** bundle these font files. To use custom fonts:
 
 4. Update the names in `FontFamily` to match each font's PostScript name, then rebuild both apps.
 
+## Feedback (`common-functions.ts`, `snackbar.ts`)
+
+| Export | Description |
+| --- | --- |
+| `showSnackbar(title, message?)` | Success message at the bottom of the screen |
+| `showErrorSnackbar(message?)` | Error message; without a message it shows `AppString.somethingWentWrong` |
+| `getErrorMessage(error)` | Best readable message from a backend error body, `AxiosError`, `Error` or string |
+
+They work from anywhere (screens, mutation callbacks, interceptors). `<SnackbarHost />` (`src/components/SnackbarHost.tsx`), mounted once in `App.tsx`, renders them: one at a time, for 3 seconds or until tapped, above the bottom safe area, animated with Reanimated.
+
+## Formatting & payloads (`common-functions.ts`)
+
+| Export | Example |
+| --- | --- |
+| `formatWithComma(value, locale?)` | `1234567` → `"1,234,567"` |
+| `formatPrice(value, locale?)` | `1234.5` → `"1,234.50"` |
+| `cleanPayload(object)` | Drops `null`, `undefined` and `''` values before a request |
+
 ## Dates (`common-functions.ts`)
 
 `toFormattedDate(isoString, formatStr)` parses an ISO string with date-fns and formats it. Returns `null` for empty or invalid input.

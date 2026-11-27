@@ -5,7 +5,8 @@ API code is split into four layers, each in `src/api/`:
 ```
 AxiosClient.ts   →  AxiosActions.ts  →  service.ts      →  queries.ts       →  screen
 (instance,          (getAPI, postAPI,   (one function     (React Query
- interceptors)       putAPI, deleteAPI)   per endpoint)     hooks)
+ interceptors)       put/patch/delete,    per endpoint)     hooks, one file)
+ uploadAPI)
 ```
 
 ## 1. Axios client
@@ -19,14 +20,12 @@ export const axiosClient = axios.create({
 });
 ```
 
-The request interceptor is a pass-through today. It is where you attach headers.
-
 ### Attaching the auth token
 
-```ts
-import store from '../redux/store';
+Already done: the request interceptor reads `accessToken` from the auth slice and sends `Authorization: Bearer <token>` when there is one.
 
-axiosClient.interceptors.request.use((config) => {
+```ts
+axiosClient.interceptors.request.use(config => {
   const token = store.getState().auth.accessToken;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -61,31 +60,31 @@ axiosClient.interceptors.response.use(
 
 | Function | Request |
 | --- | --- |
-| `getAPI(url, params?)` | `GET` with query params |
-| `postAPI(url, payload)` | `POST` with JSON body |
-| `putAPI(url, payload)` | `PUT` with JSON body |
-| `deleteAPI(url, params?)` | `DELETE` with query params |
+| `getAPI<T>(url, params?)` | `GET` with query params |
+| `postAPI<T>(url, payload?)` | `POST` with JSON body |
+| `putAPI<T>(url, payload?)` | `PUT` with JSON body |
+| `patchAPI<T>(url, payload?)` | `PATCH` with JSON body |
+| `deleteAPI<T>(url, params?)` | `DELETE` with query params |
+| `uploadAPI<T>(url, formData, config?)` | Multipart `POST` |
+
+`T` is the response type (defaults to `unknown`).
 
 Each returns `response.data` and, on failure, throws `err.response?.data` (the server's error body) or the original error if there was no response.
 
 ## 3. Services
 
-`src/api/service.ts` holds one small function per endpoint. The template ships a Todos example against JSONPlaceholder:
+Paths live in `constants/API_Routes.ts`. `src/api/service.ts` holds one small `do*` function per endpoint, typed with the shared types in `src/redux/types.d.ts`. The template ships a Todos example against JSONPlaceholder:
 
 ```ts
-export const fetchTodos = () => getAPI('/todos');
-export const fetchTodoById = (id: number) => getAPI(`/todos/${id}`);
-export const addTodo = (title: string) => postAPI('/todos', { title, completed: false });
-export const updateTodo = (id: number, payload: { title?: string; completed?: boolean }) =>
-  putAPI(`/todos/${id}`, payload);
-export const deleteTodo = (id: number) => deleteAPI(`/todos/${id}`);
-```
-
-Type the return values once you have real endpoints, using the shared types in `src/redux/types.d.ts`:
-
-```ts
-import type { TodoItem } from '../redux/types';
-export const fetchTodos = (): Promise<TodoItem[]> => getAPI('/todos');
+export const doLogin = (body: LoginForm) => postAPI<LoginResponse>(API_Routes.login, body);
+export const doGetTodos = (params: TodoListParams) => getAPI<TodoItem[]>(API_Routes.todos, params);
+export const doGetTodoById = (id: number) => getAPI<TodoItem>(`${API_Routes.todos}/${id}`);
+export const doAddTodo = (title: string) =>
+  postAPI<TodoItem>(API_Routes.todos, { title, completed: false });
+export const doUpdateTodo = (id: number, body: Partial<Omit<TodoItem, 'id'>>) =>
+  putAPI<TodoItem>(`${API_Routes.todos}/${id}`, body);
+export const doDeleteTodo = (id: number) => deleteAPI(`${API_Routes.todos}/${id}`);
+export const doUploadFile = (body: FormData) => uploadAPI(API_Routes.uploadFile, body);
 ```
 
 ## 4. React Query hooks
@@ -94,27 +93,70 @@ export const fetchTodos = (): Promise<TodoItem[]> => getAPI('/todos');
 
 | Hook | Kind | Query key | Invalidates |
 | --- | --- | --- | --- |
-| `useTodos()` | query | `['todos']` | |
+Every hook lives in this one file. Cache invalidation goes in the hook; UI reactions (snackbar, navigation) go in the screen's `mutate(vars, { onSuccess, onError })`.
+
+| Hook | Kind | Query key | Invalidates |
+| --- | --- | --- | --- |
+| `useLogin()` | mutation | | |
+| `useTodoList()` | paginated (`usePaginatedAPI`) | `['todos', { search, limit }]` | |
 | `useTodoById(id)` | query | `['todo', id]` | |
 | `useAddTodo()` | mutation | | `['todos']` |
+| `useUpdateTodo()` | mutation | | `['todos']`, `['todo', id]` |
 | `useDeleteTodo()` | mutation | | `['todos']` |
 
 ```tsx
 const TodoList = () => {
-  const { data, isLoading, error, refetch } = useTodos();
-  const addTodo = useAddTodo();
-
-  if (isLoading) return <ActivityIndicator />;
-  if (error) return <Text>Failed to load</Text>;
+  const { theme } = useTheme();
+  const { data, isRefreshing, isFetchingNextPage, handleScrollToBottom, handleRefetch } =
+    useTodoList();
+  const { mutate: addTodo } = useAddTodo();
 
   return (
-    <>
-      <FlatList data={data} renderItem={({ item }) => <Text>{item.title}</Text>} />
-      <Button title="Add" onPress={() => addTodo.mutate('New todo')} />
-    </>
+    <FlatList
+      data={data}
+      keyExtractor={item => String(item.id)}
+      renderItem={({ item }) => <Text style={{ color: theme.text }}>{item.title}</Text>}
+      refreshing={isRefreshing}
+      onRefresh={handleRefetch}
+      onEndReached={handleScrollToBottom}
+      ListFooterComponent={isFetchingNextPage ? <ActivityIndicator color={theme.primary} /> : null}
+      ListHeaderComponent={
+        <Button
+          title="Add"
+          onPress={() => addTodo('New todo', { onError: err => showErrorSnackbar(getErrorMessage(err)) })}
+        />
+      }
+    />
   );
 };
 ```
+
+### Pagination (`usePaginatedAPI`)
+
+`src/hooks/usePaginatedAPI.ts` wraps `useInfiniteQuery`:
+
+```ts
+export const useTodoList = () =>
+  usePaginatedAPI({
+    queryKey: ['todos'],
+    queryFn: ({ pageParam, limit, search }) =>
+      doGetTodos({ _page: pageParam, _limit: limit, q: search || undefined }),
+    select: (pages: TodoItem[][]) => pages.flat(),
+    limit: 20,
+  });
+```
+
+| Option | Meaning |
+| --- | --- |
+| `queryKey` | Base key; `search`, `limit` and `dynamicParams` are appended |
+| `queryFn({ pageParam, limit, search, dynamicParams })` | Fetches one page |
+| `select(pages)` | Flattens pages into items |
+| `limit` (10), `firstPage` (1) | Page size / first page |
+| `dynamicParams` | Filters the request depends on |
+| `hasNextPage(lastPage, allPages, limit)` | Override when the API returns a total or `hasMore`; default is "the last page had `limit` items" |
+| `staleTime`, `enabled` | Passed through |
+
+It returns `data` (flattened), `isLoading`, `isFetchingNextPage`, `isRefreshing`, `hasNextPage`, `error`, `handleScrollToBottom`, `handleRefetch`, `search`, `handleSearch` (debounced 400 ms), `resetSearch` and the raw `query`.
 
 ### Query client defaults
 
@@ -128,34 +170,25 @@ Set in `App.tsx`:
 
 ## A real login, replacing the demo
 
-```ts
-// service.ts
-export const login = (body: { email: string; password: string }) =>
-  postAPI('/auth/login', body);
-
-// queries.ts
-export const useLogin = () => {
-  const dispatch = useAppDispatch();
-  return useMutation({
-    mutationFn: login,
-    onSuccess: ({ user, accessToken }) => {
-      dispatch(setCredentials({ user, accessToken }));
-    },
-  });
-};
-```
+`doLogin` and `useLogin` already exist. Point `API_Routes.login` at your backend, adjust `LoginResponse` in `types.d.ts`, then in `LoginScreen.tsx` replace the demo `dispatch` with the mutation:
 
 ```tsx
-// LoginScreen.tsx
-const loginMutation = useLogin();
+const { mutate: login, isPending } = useLogin();
 
 const onLogin = () =>
-  loginMutation.mutate(
-    { email, password },
-    { onSuccess: () => navigation.reset({ index: 0, routes: [{ name: 'HomeScreen' }] }) },
-  );
+  login({ email, password }, {
+    onSuccess: res => {
+      dispatch(setCredentials({ user: res.user, accessToken: res.accessToken }));
+      navigation.reset({ index: 0, routes: [{ name: 'HomeScreen' }] });
+    },
+    onError: err => showErrorSnackbar(getErrorMessage(err)),
+  });
+
+<Pressable onPress={onLogin} disabled={isPending}>…</Pressable>
 ```
+
+`AxiosClient.ts` then sends `Authorization: Bearer <accessToken>` on every request.
 
 ## Error messages
 
-`src/helper/common-functions.ts` contains an `errorMessage(error)` helper that pulls `response.data.message` from Axios errors. It is not exported yet; export it if you want to use it in screens. Note that because `AxiosActions` rethrows the response body, errors that reach React Query are usually the server body itself, not an `AxiosError`.
+Use `getErrorMessage(error)` from `src/helper/common-functions.ts`. It handles the server's error body (`{ message }`, which is what `AxiosActions` rethrows), an `AxiosError`, an `Error` or a string, and falls back to `AppString.somethingWentWrong`. Show it with `showErrorSnackbar(getErrorMessage(err))`.

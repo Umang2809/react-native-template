@@ -1,4 +1,4 @@
-const mockStorage = new Map<string, any>();
+const mockStorage = new Map<string, unknown>();
 
 export class MMKVMock {
   set(key: string, value: boolean | string | number | Uint8Array) {
@@ -7,17 +7,17 @@ export class MMKVMock {
 
   getString(key: string): string | undefined {
     const val = mockStorage.get(key);
-    return typeof val === "string" ? val : undefined;
+    return typeof val === 'string' ? val : undefined;
   }
 
   getBoolean(key: string): boolean | undefined {
     const val = mockStorage.get(key);
-    return typeof val === "boolean" ? val : undefined;
+    return typeof val === 'boolean' ? val : undefined;
   }
 
   getNumber(key: string): number | undefined {
     const val = mockStorage.get(key);
-    return typeof val === "number" ? val : undefined;
+    return typeof val === 'number' ? val : undefined;
   }
 
   getBuffer(key: string): Uint8Array | undefined {

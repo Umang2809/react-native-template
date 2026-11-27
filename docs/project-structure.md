@@ -3,44 +3,52 @@
 ```
 MyApp/
 ├── App.tsx                    # Root component: provider tree
-├── Main.tsx                   # NavigationContainer + AppStack
+├── Main.tsx                   # NavigationContainer (theme-synced) + StatusBar + AppStack
 ├── index.js                   # AppRegistry entry
 ├── app.json                   # App name / display name
 ├── babel.config.js            # RN preset + react-native-worklets plugin
 ├── metro.config.js            # Default Metro config
 ├── tsconfig.json              # Extends @react-native/typescript-config
 ├── .eslintrc                  # Lint rules (see code-quality.md)
-├── jest.config.js
+├── .prettierrc.js             # Formatting (single quotes, printWidth 100)
+├── jest.config.js             # Transform list for ESM packages
+├── jest.setup.js              # Reanimated / Worklets mocks
 ├── __mocks__/
 │   └── react-native-mmkv.ts   # In-memory MMKV for Jest
 ├── __tests__/
-│   └── App.test.tsx
+│   ├── App.test.tsx
+│   └── helpers.test.ts        # Formatters, cleanPayload, getErrorMessage, snackbar store
 ├── constants/
+│   ├── API_Routes.ts          # Every endpoint path
 │   ├── AppConstants.tsx       # API_BASE_URL and other app constants
+│   ├── AppString.ts           # Every user-facing string
 │   └── StoragePreferences.ts  # MMKV instance, redux-persist adapter, helpers
 ├── android/  ios/             # Native projects
 └── src/
     ├── api/
-    │   ├── AxiosClient.ts     # Axios instance + interceptors
-    │   ├── AxiosActions.ts    # getAPI / postAPI / putAPI / deleteAPI
-    │   ├── service.ts         # Endpoint functions (one per API call)
-    │   └── queries.ts         # React Query hooks wrapping service.ts
+    │   ├── AxiosClient.ts     # Axios instance + Bearer-token interceptor
+    │   ├── AxiosActions.ts    # getAPI / postAPI / putAPI / patchAPI / deleteAPI / uploadAPI
+    │   ├── service.ts         # Endpoint functions (one `do*` per API call)
+    │   └── queries.ts         # Every React Query hook, in one file
     ├── assets/
     │   ├── fonts/  images/  svg/
     ├── components/
-    │   └── ErrorBoundary.tsx
+    │   ├── ErrorBoundary.tsx
+    │   └── SnackbarHost.tsx   # Renders showSnackbar / showErrorSnackbar
     ├── helper/
     │   ├── colors.ts          # Static named color palette
-    │   ├── common-functions.ts# Date formatting
+    │   ├── common-functions.ts# Snackbars, error messages, formatting, dates, cleanPayload
     │   ├── font-family.ts     # Font name map
     │   ├── matrics.ts         # horizontal/vertical/moderate scale
     │   ├── navigation-service.ts # navigate() etc. outside components
+    │   ├── snackbar.ts        # Snackbar store used by showSnackbar
     │   ├── typography.ts      # Text style presets
     │   └── utility-functions.ts  # Platform flags, responsive sizes, alerts
     ├── hooks/
-    │   └── ThemeContext.tsx   # ThemeProvider + useTheme
+    │   ├── ThemeContext.tsx   # ThemeProvider + useTheme (persisted light/dark/system)
+    │   └── usePaginatedAPI.ts # Infinite-scroll helper on useInfiniteQuery
     ├── navigation/
-    │   ├── AppStack.tsx       # Stack navigator built from screens.ts
+    │   ├── AppStack.tsx       # Native stack built from screens.ts
     │   ├── AppStackParams.ts  # Route param types
     │   └── screens.ts         # Screen registry
     ├── redux/
@@ -56,7 +64,7 @@ MyApp/
     └── theme/
         ├── lightTheme.ts
         ├── darkTheme.ts
-        └── index.ts           # themes map + ThemeType
+        └── index.ts           # themes map, ThemeType, ThemeMode
 ```
 
 ## The provider tree
@@ -70,7 +78,8 @@ ErrorBoundary                 catches render errors anywhere below
         └── PersistGate       waits for MMKV rehydration before rendering
             └── SafeAreaProvider
                 └── ThemeProvider
-                    └── Main  NavigationContainer → AppStack
+                    ├── Main  NavigationContainer → StatusBar + AppStack
+                    └── SnackbarHost  messages from showSnackbar / showErrorSnackbar
 ```
 
 Why this order matters:

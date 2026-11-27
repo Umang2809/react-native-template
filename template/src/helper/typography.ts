@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-export const FontWeight: any = {
+export const FontWeight = {
   thin: '100',
   ultraLight: '200',
   light: '300',
@@ -10,7 +10,7 @@ export const FontWeight: any = {
   bold: '700',
   heavy: '800',
   black: '900',
-};
+} as const;
 
 export const Typography = StyleSheet.create({
   header: {

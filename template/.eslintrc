@@ -2,7 +2,6 @@
   "root": true,
   "extends": [
     "@react-native",
-    "@react-native-community",
     "plugin:@tanstack/eslint-plugin-query/recommended",
   ],
   "parser": "@typescript-eslint/parser",
@@ -26,6 +25,11 @@
     "node": true,
     "react-native/react-native": true,
   },
+  "settings": {
+    "react": {
+      "version": "detect",
+    },
+  },
   "rules": {
     // React best practices
     "react/react-in-jsx-scope": "off",
@@ -43,14 +47,14 @@
       },
     ],
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/explicit-function-return-types": "off",
     "@typescript-eslint/no-non-null-assertion": "warn",
 
-    // React Native best practices
+    // Styling: StyleSheet.create at the bottom of each file, theme colors from
+    // useTheme(), no literal colors or inline style objects.
     "react-native/no-unused-styles": "warn",
-    "react-native/split-platform-components": "warn",
     "react-native/no-inline-styles": "warn",
     "react-native/no-color-literals": "warn",
+    "react-native/split-platform-components": "warn",
 
     // General best practices
     "no-console": [
@@ -64,51 +68,9 @@
     "prefer-const": "error",
     "eqeqeq": ["error", "always"],
     "curly": ["error", "all"],
-    "brace-style": ["error", "1tbs"],
-    "space-before-function-paren": [
-      "error",
-      {
-        "anonymous": "always",
-        "named": "never",
-        "asyncArrow": "always",
-      },
-    ],
-    "semi": ["error", "always"],
-    "quotes": ["error", "single", { "avoidEscape": true }],
-    "indent": ["error", 2],
-
-    // Import organization
-    "sort-imports": "off",
-    "import/order": [
-      "warn",
-      {
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          "parent",
-          "sibling",
-          "index",
-        ],
-        "pathGroups": [
-          {
-            "pattern": "react*",
-            "group": "external",
-            "position": "before",
-          },
-        ],
-        "alphabeticalOrder": true,
-      },
-    ],
 
     // React Query best practices
     "@tanstack/query/exhaustive-deps": "error",
-    "@tanstack/query/prefer-query-object-syntax": "warn",
-  },
-  "settings": {
-    "react": {
-      "version": "detect",
-    },
   },
   "overrides": [
     {
@@ -124,6 +86,14 @@
       "files": ["**/*.d.ts"],
       "rules": {
         "@typescript-eslint/no-unused-vars": "off",
+      },
+    },
+    {
+      // ErrorBoundary sits above ThemeProvider, and colors.ts is the static
+      // palette, so both use literal colors on purpose.
+      "files": ["src/components/ErrorBoundary.tsx", "src/helper/colors.ts", "src/theme/*Theme.ts"],
+      "rules": {
+        "react-native/no-color-literals": "off",
       },
     },
   ],

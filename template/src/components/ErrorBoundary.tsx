@@ -1,5 +1,5 @@
-import React, { ReactNode, ErrorInfo } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { ReactNode, ErrorInfo } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface Props {
   children: ReactNode;
@@ -26,14 +26,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
     };
   }
 
-  static getDerivedStateFromError(error: Error): Partial<State> {
+  static getDerivedStateFromError(): Partial<State> {
     return { hasError: true };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error details for debugging
-    console.error("ErrorBoundary caught an error:", error);
-    console.error("Error Info:", errorInfo);
+    console.error('ErrorBoundary caught an error:', error);
+    console.error('Error Info:', errorInfo);
 
     this.setState({
       error,
@@ -62,13 +62,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
             {__DEV__ && this.state.error && (
               <View style={styles.errorDetails}>
                 <Text style={styles.errorTitle}>Error Details:</Text>
-                <Text style={styles.errorText}>
-                  {this.state.error.toString()}
-                </Text>
+                <Text style={styles.errorText}>{this.state.error.toString()}</Text>
                 {this.state.errorInfo && (
-                  <Text style={styles.stackTrace}>
-                    {this.state.errorInfo.componentStack}
-                  </Text>
+                  <Text style={styles.stackTrace}>{this.state.errorInfo.componentStack}</Text>
                 )}
               </View>
             )}
@@ -88,17 +84,17 @@ export class ErrorBoundary extends React.Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
   },
   content: {
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
     borderRadius: 12,
     padding: 24,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -106,49 +102,49 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#333333",
+    fontWeight: 'bold',
+    color: '#333333',
     marginBottom: 12,
-    textAlign: "center",
+    textAlign: 'center',
   },
   message: {
     fontSize: 16,
-    color: "#666666",
-    textAlign: "center",
+    color: '#666666',
+    textAlign: 'center',
     marginBottom: 20,
     lineHeight: 22,
   },
   errorDetails: {
-    backgroundColor: "#ffe6e6",
+    backgroundColor: '#ffe6e6',
     borderRadius: 8,
     padding: 12,
     marginBottom: 20,
     maxHeight: 200,
   },
   errorTitle: {
-    fontWeight: "600",
-    color: "#d32f2f",
+    fontWeight: '600',
+    color: '#d32f2f',
     marginBottom: 8,
   },
   errorText: {
-    color: "#c62828",
+    color: '#c62828',
     fontSize: 12,
     marginBottom: 8,
   },
   stackTrace: {
-    color: "#c62828",
+    color: '#c62828',
     fontSize: 10,
-    fontFamily: "Courier New",
+    fontFamily: 'Courier New',
   },
   button: {
-    backgroundColor: "#4045EF",
+    backgroundColor: '#4045EF',
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 8,
   },
   buttonText: {
-    color: "#ffffff",
+    color: '#ffffff',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

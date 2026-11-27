@@ -1,6 +1,6 @@
 # Publishing the Template
 
-This page is for maintainers of `@umang-thakkar/base-template`.
+This page is for maintainers of `@umang-thakkar/base-template` (the standard, StyleSheet template). The NativeWind variant lives in its own repo and package, `@umang-thakkar/base-template-nativewind`.
 
 ## Repository layout
 
@@ -14,7 +14,15 @@ base-template/
 └── README.md            # npm / GitHub landing page
 ```
 
-`package.json` publishes only `template/*` and `template.config.js` (see `"files"`).
+`package.json` publishes only `template/*` and `template.config.js` (see `"files"`). Because `"files"` wins over `.gitignore`, it also lists exclusions (`!template/node_modules`, `!template/ios/Pods`, build folders, lock files and `!template/ios/.xcode.env.local`, which holds a machine-specific Node path). Keep them: installing dependencies inside `template/` for local testing would otherwise publish `node_modules` (~65 MB).
+
+Always check the contents before publishing:
+
+```bash
+npm pack --dry-run
+```
+
+It should list about 95 files and a package size around 155 kB.
 
 ## How `init` uses it
 

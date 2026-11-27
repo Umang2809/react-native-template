@@ -1,12 +1,12 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { StyleSheet } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Provider } from "react-redux";
-import store, { persistor } from "./src/redux/store";
-import { PersistGate } from "redux-persist/integration/react";
-import Main from "./Main";
-import { ThemeProvider } from "./src/hooks/ThemeContext";
-import { ErrorBoundary } from "./src/components/ErrorBoundary";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider } from 'react-redux';
+import store, { persistor } from './src/redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import Main from './Main';
+import { ThemeProvider } from './src/hooks/ThemeContext';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
+import SnackbarHost from './src/components/SnackbarHost';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,6 +27,8 @@ function App() {
             <SafeAreaProvider>
               <ThemeProvider>
                 <Main />
+                {/* Shows messages from showSnackbar / showErrorSnackbar above every screen. */}
+                <SnackbarHost />
               </ThemeProvider>
             </SafeAreaProvider>
           </PersistGate>
@@ -35,11 +37,5 @@ function App() {
     </ErrorBoundary>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;

@@ -1,23 +1,27 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { persistReducer, persistStore } from "redux-persist";
-import reducer from "./slice";
-import authReducer from "./slices/authSlice";
-import { reduxStorage } from "../../constants/StoragePreferences";
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { persistReducer, persistStore } from 'redux-persist';
+import reducer from './slice';
+import authReducer from './slices/authSlice';
+import { reduxStorage } from '../../constants/StoragePreferences';
+
 const persistConfig = {
-  key: "root",
+  key: 'root',
   storage: reduxStorage,
-  whitelist: ["auth"],
+  // Only these slices are written to MMKV. Server data belongs in React Query.
+  whitelist: ['auth'],
 };
 
 const rootReducer = combineReducers({
   global: reducer,
   auth: authReducer,
 });
+
 const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),

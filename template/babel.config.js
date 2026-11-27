@@ -1,4 +1,5 @@
 module.exports = {
   presets: ['module:@react-native/babel-preset'],
-  plugins: ['react-native-worklets/plugin',],
+  // Reanimated 4 runs on react-native-worklets; this plugin must be listed last.
+  plugins: ['react-native-worklets/plugin'],
 };

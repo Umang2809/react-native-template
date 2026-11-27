@@ -1,26 +1,38 @@
 # Navigation
 
-Navigation uses React Navigation 7. The root is in `Main.tsx`:
+Navigation uses React Navigation 7 with the **native stack** (`@react-navigation/native-stack`). The root is in `Main.tsx`:
 
 ```tsx
-<NavigationContainer ref={navigationRef}>
+<NavigationContainer ref={navigationRef} theme={navigationTheme}>
   <AppStack />
 </NavigationContainer>
 ```
 
+`navigationTheme` is built from the app theme (`useTheme()`): `background`, `card`, `text`, `border`, `primary` and `notification` (→ `error`) come from your palette, and light/dark follows the app's mode. Screens and transitions get the right background, with no white flash in dark mode.
+
 ## The stack
 
-`src/navigation/AppStack.tsx` builds a **JS stack** (`@react-navigation/stack`) from the screen registry, with headers hidden and `SplashScreen` as the initial route.
+`src/navigation/AppStack.tsx` builds a native stack from the screen registry in `screens.ts`, with `SplashScreen` as the initial route. Native stack uses `UINavigationController` on iOS and Fragments on Android, so transitions and the iOS swipe-back gesture run natively instead of in JS.
 
-```tsx
-<App.Navigator initialRouteName="SplashScreen">
-  {screens.map((item) => (
-    <App.Screen key={item.name} name={item.name} component={item.component} options={options} />
-  ))}
-</App.Navigator>
+Default options for every screen (`defaultScreenOptions`):
+
+| Option | Value | Why |
+| --- | --- | --- |
+| `headerShown` | `false` | Screens draw their own headers |
+| `animation` | `'ios_from_right'` | The same slide on iOS and Android (Android's default is a fade from the bottom) |
+| `freezeOnBlur` | `true` | Screens that aren't focused stop re-rendering until you return to them |
+
+Per-screen `options` in `screens.ts` are merged over these defaults. The template uses `animation: 'fade'` for Login and Home, because they replace the whole stack (`navigation.reset`) and a slide would suggest you can go back.
+
+Common per-screen options:
+
+```ts
+{ name: 'Settings', component: SettingsScreen, options: { headerShown: true, title: 'Settings' } },
+{ name: 'Filters', component: FiltersScreen, options: { presentation: 'formSheet' } },   // iOS sheet
+{ name: 'Onboarding', component: OnboardingScreen, options: { gestureEnabled: false } },
 ```
 
-`@react-navigation/native-stack` is also installed, and the screens type their props with `NativeStackNavigationProp`. To switch to the faster native stack, replace `createStackNavigator` with `createNativeStackNavigator` and `StackNavigationOptions` with `NativeStackNavigationOptions`. See [Roadmap](./roadmap.md#known-issues).
+The JS stack (`@react-navigation/stack`) is no longer installed. Native stack covers what the template needs and is faster.
 
 ## Adding a screen
 
@@ -42,7 +54,8 @@ Navigation uses React Navigation 7. The root is in `Main.tsx`:
    { name: 'ProfileScreen', component: ProfileScreen },
    ```
 
-   You can pass per-screen `options` here as well; note that `AppStack` currently applies the shared `options` and ignores `item.options`. Change it to `options={{ ...options, ...item.options }}` if you need per-screen options.
+   Add `options` here to override the defaults for that screen.
+4. Wrap the screen's content in `SafeAreaView` from `react-native-safe-area-context` with `{ backgroundColor: theme.background }` (see `LoginScreen.tsx`).
 
 ## Typed screen props
 

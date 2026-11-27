@@ -12,7 +12,16 @@
   "type": "commonjs",
   "files": [
     "template/*",
-    "template.config.js"
+    "template.config.js",
+    "!template/node_modules",
+    "!template/ios/Pods",
+    "!template/ios/build",
+    "!template/android/build",
+    "!template/android/app/build",
+    "!template/android/.gradle",
+    "!template/ios/.xcode.env.local",
+    "!template/package-lock.json",
+    "!template/yarn.lock"
   ],
   "dependencies": {},
   "devDependencies": {

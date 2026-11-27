@@ -8,7 +8,7 @@ Everything lives in `constants/StoragePreferences.ts`.
 
 | Export | What it is |
 | --- | --- |
-| `storage` | The raw MMKV instance. Works with v4 (`createMMKV()`) and v3 (`new MMKV()`). |
+| `storage` | The raw MMKV instance (`createMMKV()`, react-native-mmkv v4). |
 | `reduxStorage` | A redux-persist `Storage` adapter. Wraps the synchronous MMKV calls in Promises. |
 | `StorageKeys` | Shared key names (see below). |
 | `getData(key, parseJSON?)` | Read a string, optionally `JSON.parse` it. Returns `null` if missing. |

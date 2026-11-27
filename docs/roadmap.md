@@ -10,11 +10,11 @@ Legend: 🟢 works in bare React Native CLI as-is · 🟡 needs Expo Modules (`n
 
 | # | Feature | What vega-app does | How to bring it to the template | Priority |
 | --- | --- | --- | --- | --- |
-| 1 | **NativeWind v4 (Tailwind CSS)** 🟢 | `className="bg-m3-surface p-4 rounded-xl"` on 60+ files. Wired via `babel.config.js` (`jsxImportSource: 'nativewind'`), `metro.config.js` (`withNativeWind(config, { input: './src/global.css' })`), `tailwind.config.js` with `nativewind/preset`, `src/global.css` (`@tailwind base/components/utilities`) and `nativewind-env.d.ts`. | Install `nativewind` + `tailwindcss@3` (+ `react-native-css-interop`), add the same five files (bare RN uses `presets: ['module:@react-native/babel-preset', 'nativewind/babel']`), import `global.css` in `App.tsx`. Keep `StyleSheet` working alongside. | **P1** |
-| 2 | **Theme tokens as CSS variables** 🟢 | The theme provider publishes every color role with NativeWind's `vars()` (`--m3-surface`, `--m3-on-primary`…), and `tailwind.config.js` maps them to classes (`bg-m3-surface`, `text-m3-on-surface`). Theme switches re-color every `className` with no re-render logic per component. | Make `ThemeProvider` wrap children in a `View` with `style={vars({...})}` built from `lightTheme`/`darkTheme`, and generate the Tailwind `colors` entries from the same token list. One source of truth for JS (`useTheme`) and classes. | **P1** |
+| 1 | ➡️ **NativeWind v4 (Tailwind CSS)** (moved to the separate `@umang-thakkar/base-template-nativewind` package) 🟢 | `className="bg-m3-surface p-4 rounded-xl"` on 60+ files. Wired via `babel.config.js` (`jsxImportSource: 'nativewind'`), `metro.config.js` (`withNativeWind(config, { input: './src/global.css' })`), `tailwind.config.js` with `nativewind/preset`, `src/global.css` (`@tailwind base/components/utilities`) and `nativewind-env.d.ts`. | Install `nativewind` + `tailwindcss@3` (+ `react-native-css-interop`), add the same five files (bare RN uses `presets: ['module:@react-native/babel-preset', 'nativewind/babel']`), import `global.css` in `App.tsx`. Keep `StyleSheet` working alongside. | **P1** |
+| 2 | ➡️ **Theme tokens as CSS variables** (in `@umang-thakkar/base-template-nativewind`) 🟢 | The theme provider publishes every color role with NativeWind's `vars()` (`--m3-surface`, `--m3-on-primary`…), and `tailwind.config.js` maps them to classes (`bg-m3-surface`, `text-m3-on-surface`). Theme switches re-color every `className` with no re-render logic per component. | Make `ThemeProvider` wrap children in a `View` with `style={vars({...})}` built from `lightTheme`/`darkTheme`, and generate the Tailwind `colors` entries from the same token list. One source of truth for JS (`useTheme`) and classes. | **P1** |
 | 3 | **Material 3 token set** 🟢 | `src/theme/` has full M3 color roles (primary/onPrimary/containers/surfaceContainer levels…), a type scale (`displayLarge` → `labelSmall`, plus emphasized variants), a shape scale (`extraSmall 4` → `full`), and Reanimated spring presets for motion (`spatial` / `effects` × `fast/default/slow`). | Replace the 5-token theme with role-based tokens (`background`, `surface`, `surfaceContainerHigh`, `onSurface`, `outline`, `error`…). Add `theme/typography.ts`, `theme/shapes.ts`, `theme/motion.ts`. Keep the old `Typography` presets until migrated. | **P1** |
 | 4 | **Dynamic accent / seed color** 🟡 | User picks a seed color (or wallpaper colors on Android); the whole palette is generated from it and persisted. | Bare-friendly: generate the palette with `@material/material-color-utilities` (`themeFromSourceColor`). Store the seed with MMKV. | P3 |
-| 5 | **Persisted Light / Dark / System setting** 🟢 | `themeStore` (Zustand + persist) remembers the user's choice. | Store `THEME_MODE` (`'light' \| 'dark' \| 'system'`) in MMKV; only follow `Appearance` when `system`. Fixes the current "toggle not saved" limitation. | **P1** |
+| 5 | ✅ **Persisted Light / Dark / System setting** (done: `preference` / `setPreference` in `useTheme()`, saved in MMKV) 🟢 | `themeStore` (Zustand + persist) remembers the user's choice. | Store `THEME_MODE` (`'light' \| 'dark' \| 'system'`) in MMKV; only follow `Appearance` when `system`. Fixes the current "toggle not saved" limitation. | **P1** |
 | 6 | **`<Text role="titleMedium">`** 🟢 | `components/ui/Text.tsx` applies a type-scale role by prop. | Add a themed `AppText` that applies `role` + theme `onSurface` color by default. | P2 |
 
 ## UI component kit
@@ -69,7 +69,7 @@ Legend: 🟢 works in bare React Native CLI as-is · 🟡 needs Expo Modules (`n
 
 | # | Feature | Details | Priority |
 | --- | --- | --- | --- |
-| 35 | **Prettier config** | `.prettierrc.js` (`singleQuote`, `trailingComma: 'all'`, `arrowParens: 'avoid'`, `bracketSpacing: false`). Also fixes the ESLint/Prettier quote conflict. | **P1** |
+| 35 | ✅ **Prettier config** (done: `.prettierrc.js`) | `.prettierrc.js` (`singleQuote`, `trailingComma: 'all'`, `arrowParens: 'avoid'`, `bracketSpacing: false`). Also fixes the ESLint/Prettier quote conflict. | **P1** |
 | 36 | **Pre-commit hook** | `simple-git-hooks` + `pretty-quick --staged` (format staged files on commit) | P2 |
 | 37 | **patch-package** | `"postinstall": "patch-package"` so library fixes live in `patches/` and survive installs | **P1** |
 | 38 | **Path aliases** | `babel-plugin-module-resolver` + `tsconfig` `paths` (`@/components/...` instead of `../../../`) | **P1** |
@@ -82,8 +82,8 @@ Not proposed for the template (app-specific to vega): video player, downloads/HL
 
 ## Suggested order
 
-1. Tooling first: Prettier, path aliases, patch-package, release console stripping (#35, #38, #37, #33).
-2. NativeWind + token-based theme with CSS variables and a persisted mode (#1, #2, #3, #5).
+1. Tooling first: ~~Prettier~~ (done), path aliases, patch-package, release console stripping (#35, #38, #37, #33).
+2. ~~Persisted mode (#5)~~ (done). NativeWind styling now lives in its own package, [`@umang-thakkar/base-template-nativewind`](https://www.npmjs.com/package/@umang-thakkar/base-template-nativewind).
 3. UI kit + global dialog host (#7, #9, #10, #14).
 4. Hardened query client, bootsplash, edge-to-edge, optional Firebase (#17, #20, #21, #22).
 5. The P2/P3 items as needed.
@@ -92,18 +92,12 @@ Not proposed for the template (app-specific to vega): video player, downloads/HL
 
 Found while writing these docs.
 
+Fixed in 1.2.0: dark theme `card` color, theme choice not persisted, JS stack instead of the native stack (and per-screen `options` ignored), request interceptor not attaching the token, unexported `errorMessage` helper (now `getErrorMessage`), `SplashScreen` timer not cleared, navigation theme not following the app theme, double quotes in sources (Prettier config added), unused `styles` in `App.tsx`, `npm run lint` crashing on the missing `@react-native-community` config and the `import/order` rule, the `tsc` error from the MMKV v3 fallback, Jest failing on ESM packages, and `react-native-reanimated@^4.4.1` resolving to a version that needs RN 0.87 (now pinned `~4.5.5` with Worklets `~0.10.4`).
+
+Still open:
+
 | Issue | Where | Fix |
 | --- | --- | --- |
-| Dark theme `card` is `#FFFF` (white), so Login inputs show white text on white | `src/theme/darkTheme.ts` | Use a dark value such as `#1A1A1A` |
-| Theme toggle isn't persisted and is overridden by system appearance changes | `src/hooks/ThemeContext.tsx` | Roadmap #5 |
-| Navigator is the JS stack (`@react-navigation/stack`) while screens are typed with `NativeStackNavigationProp` and `native-stack` is installed | `src/navigation/AppStack.tsx` | Switch to `createNativeStackNavigator` and drop `@react-navigation/stack` |
-| `screens.ts` accepts per-screen `options`, but `AppStack` ignores them | `src/navigation/AppStack.tsx` | `options={{ ...options, ...item.options }}` |
 | `react-native-gesture-handler` is installed but the app isn't wrapped in `GestureHandlerRootView` | `App.tsx` | Wrap the tree (required by bottom-sheet, swipeables) |
-| Request interceptor doesn't attach the access token | `src/api/AxiosClient.ts` | See [Networking](./networking.md#attaching-the-auth-token) |
-| `errorMessage` helper is defined but not exported | `src/helper/common-functions.ts` | Export it or delete it |
-| `SplashScreen` `setTimeout` isn't cleared on unmount, and the screen has no styles | `src/screens/SplashScreen.tsx` | Return a cleanup from the effect; replace with bootsplash (#20) |
-| `NavigationContainer` doesn't receive the app theme (white flash in dark mode) | `Main.tsx` | See [Theming](./theming.md#navigation-theme) |
 | Persisted access token is stored unencrypted | `constants/StoragePreferences.ts` | MMKV encryption key or Keychain/Keystore |
 | Fonts referenced in `FontFamily` aren't bundled, and there's no `react-native.config.js` | `src/helper/font-family.ts` | See [Helpers → Fonts](./helpers.md#fonts) |
-| Template sources use double quotes, which the ESLint `quotes` rule rejects | multiple files | `npx eslint . --fix`, add Prettier config (#35) |
-| Unused `styles` in `App.tsx`; empty `src/redux/action.ts` | `App.tsx`, `src/redux/` | Remove |

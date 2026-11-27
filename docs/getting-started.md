@@ -55,7 +55,7 @@ npm run ios
 
 1. **SplashScreen** shows for ~800 ms and checks Redux for an `accessToken`.
 2. With no token you land on **LoginScreen**. Pressing *Sign in* saves a dummy user and token to the `auth` slice (no real API call).
-3. **HomeScreen** shows the current theme and a *Toggle Theme* button.
+3. **HomeScreen** shows the current theme with *Toggle theme*, *Follow system* and *Log out* buttons. The theme choice is saved, so it survives a relaunch.
 4. Kill and relaunch the app: you go straight to HomeScreen because the `auth` slice was persisted to MMKV.
 
 ## Available scripts

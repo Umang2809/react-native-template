@@ -1,16 +1,10 @@
 // utils.ts
-import {
-  Dimensions,
-  Platform,
-  PixelRatio,
-  Keyboard,
-  Alert,
-} from "react-native";
+import { Dimensions, Platform, PixelRatio, Keyboard, Alert } from 'react-native';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-export const isIOS = Platform.OS === "ios";
-export const isAndroid = Platform.OS === "android";
+export const isIOS = Platform.OS === 'ios';
+export const isAndroid = Platform.OS === 'android';
 export const deviceWidth = SCREEN_WIDTH;
 export const deviceHeight = SCREEN_HEIGHT;
 
@@ -40,8 +34,8 @@ export const hideKeyboard = () => {
 export const showAlert = (
   title: string,
   message: string,
-  settingsText = "Open Settings",
-  rejectText = "Reject",
+  settingsText = 'Open Settings',
+  rejectText = 'Reject',
   onSettingsPress: () => void,
 ) => {
   Alert.alert(
@@ -51,11 +45,11 @@ export const showAlert = (
       {
         text: settingsText,
         onPress: onSettingsPress,
-        style: "default",
+        style: 'default',
       },
       {
         text: rejectText,
-        style: "destructive",
+        style: 'destructive',
       },
     ],
     { cancelable: false },
